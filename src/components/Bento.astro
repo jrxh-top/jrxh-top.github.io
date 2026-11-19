@@ -153,7 +153,7 @@ const writingPosts = (await getCollection('writing', ({ data }) => !data.draft))
     font-family: var(--font-mono);
     font-size: 11px;
     line-height: 1;
-    color: #2c323f;
+    color: var(--plus);
     transition: color 0.25s var(--ease);
   }
 
@@ -193,7 +193,7 @@ const writingPosts = (await getCollection('writing', ({ data }) => !data.draft))
   .card-label::before {
     content: '/';
     margin-right: 8px;
-    color: #313744;
+    color: var(--slash);
   }
 
   .card-title {
@@ -231,7 +231,7 @@ const writingPosts = (await getCollection('writing', ({ data }) => !data.draft))
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.04em;
-    color: #a8b0c0;
+    color: var(--text-soft-3);
   }
 
   .tag::before {
@@ -299,7 +299,7 @@ const writingPosts = (await getCollection('writing', ({ data }) => !data.draft))
   .post-title {
     font-size: 13px;
     line-height: 1.6;
-    color: #c3cad8;
+    color: var(--text-soft);
   }
 
   .post-arrow {
@@ -390,7 +390,7 @@ const writingPosts = (await getCollection('writing', ({ data }) => !data.draft))
   }
 
   .copy-btn.is-done {
-    border-color: rgba(52, 211, 153, 0.5);
+    border-color: var(--green);
   }
 
   .copy-btn.is-done .copy-label {

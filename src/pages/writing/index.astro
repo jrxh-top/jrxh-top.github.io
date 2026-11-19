@@ -2,6 +2,7 @@
 import '../../styles/global.css';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import ThemeInit from '../../components/ThemeInit.astro';
 import { site } from '../../data/site';
 import { getCollection } from 'astro:content';
 
@@ -32,7 +33,7 @@ const canonical = `${site.url}/writing/`;
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0a0c10" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="jrxh.top" />
@@ -52,9 +53,7 @@ const canonical = `${site.url}/writing/`;
     <meta name="twitter:image" content={`${site.url}/og.png`} />
     <meta name="twitter:image:alt" content="Jrxh Spark Console — jrxh.top" />
 
-    <script is:inline>
-      document.documentElement.classList.add('js');
-    </script>
+    <ThemeInit />
   </head>
 
   <body>
@@ -189,7 +188,7 @@ const canonical = `${site.url}/writing/`;
   }
 
   .note-row:hover {
-    background: rgba(255, 255, 255, 0.022);
+    background: var(--hover-row);
   }
 
   .note-row:hover::before {

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ThemeInit from '../components/ThemeInit.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -26,7 +27,7 @@ const canonical = `${site.url}/writing/${slug}/`;
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0a0c10" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
 
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="jrxh.top" />
@@ -47,9 +48,7 @@ const canonical = `${site.url}/writing/${slug}/`;
     <meta name="twitter:image" content={`${site.url}/og.png`} />
     <meta name="twitter:image:alt" content={title} />
 
-    <script is:inline>
-      document.documentElement.classList.add('js');
-    </script>
+    <ThemeInit />
   </head>
 
   <body>

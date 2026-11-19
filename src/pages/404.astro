@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ThemeInit from '../components/ThemeInit.astro';
 import { site } from '../data/site';
 ---
 
@@ -16,10 +17,8 @@ import { site } from '../data/site';
     <link rel="canonical" href={`${site.url}/404`} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0a0c10" />
-    <meta name="color-scheme" content="dark" />
-    <script is:inline>
-      document.documentElement.classList.add('js');
-    </script>
+    <meta name="color-scheme" content="dark light" />
+    <ThemeInit />
   </head>
 
   <body>
@@ -93,7 +92,7 @@ import { site } from '../data/site';
         font-size: 11px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: #4b5262;
+        color: var(--faint);
       }
 
       .crash-dot {
@@ -136,7 +135,7 @@ import { site } from '../data/site';
       }
 
       .log-line {
-        color: #b8c0d0;
+        color: var(--text-soft-2);
         white-space: pre-wrap;
         word-break: break-word;
       }
@@ -146,7 +145,7 @@ import { site } from '../data/site';
       }
 
       .log-dim {
-        color: #5d6478;
+        color: var(--faint);
       }
 
       .log-caret {

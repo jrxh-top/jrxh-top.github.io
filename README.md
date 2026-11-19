@@ -31,6 +31,7 @@ Node 版本建议 18+（本项目在 Node 22 下验证通过）。
 ├── src/
 │   ├── components/
 │   │   ├── Header.astro
+│   │   ├── ThemeInit.astro     # 首屏恢复浅色 / 深色主题
 │   │   ├── Terminal.astro
 │   │   ├── Bento.astro
 │   │   ├── ProjectCard.astro
@@ -132,6 +133,8 @@ draft: false
 ## 交互说明
 
 - 终端输入框 Enter 执行命令，↑/↓ 翻历史，Esc 清屏；
+- 主题默认跟随系统（`prefers-color-scheme`），右上角按钮可手动切换浅色 / 深色，偏好写入 `localStorage` 的 `jrxh-theme`；
+- 首屏主题在 `<head>` 内联脚本中恢复，刷新不会闪白；终端始终保留深色材质；
 - 快捷按钮会填充并执行对应命令；
 - 命令通过 `commands.ts` 的映射表分发到 Terminal 内的执行函数，**没有 eval**；
 - `contact` 优先使用 `navigator.clipboard`，失败时回退为展示邮箱文本；

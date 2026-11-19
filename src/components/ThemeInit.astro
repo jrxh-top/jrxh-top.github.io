@@ -1,0 +1,29 @@
+---
+// 首屏渲染前恢复主题，避免浅色用户看到闪白
+---
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    root.classList.add('js');
+
+    var theme = 'dark';
+    try {
+      var stored = window.localStorage.getItem('jrxh-theme');
+      if (stored === 'light' || stored === 'dark') {
+        theme = stored;
+      } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        theme = 'light';
+      }
+    } catch (error) {
+      // localStorage 不可用时退回深色
+    }
+
+    root.setAttribute('data-theme', theme);
+
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute('content', theme === 'light' ? '#f4f1ea' : '#0a0c10');
+    }
+  })();
+</script>

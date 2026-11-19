@@ -17,30 +17,50 @@ const navItems = site.nav.map((item) => ({
       <span class="status-dot" aria-hidden="true"></span>
     </a>
 
-    <button
-      class="nav-toggle"
-      type="button"
-      aria-expanded="false"
-      aria-controls="site-nav"
-      aria-label="打开导航"
-    >
-      <span class="nav-toggle-bars" aria-hidden="true"><i></i><i></i></span>
-    </button>
+    <div class="header-right">
+      <button
+        class="theme-toggle"
+        type="button"
+        data-theme-toggle
+        aria-label="切换到浅色主题"
+        title="切换主题"
+      >
+        <svg class="theme-icon icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"></path>
+        </svg>
+        <svg class="theme-icon icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path
+            d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+          ></path>
+        </svg>
+      </button>
 
-    <nav class="site-nav" id="site-nav" aria-label="主导航">
-      <ul class="nav-list">
-        {
-          navItems.map((item) => (
-            <li>
-              <a class="nav-link" href={item.href}>
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-      <a class="nav-mail" href={`mailto:${site.email}`}>{site.email}</a>
-    </nav>
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label="打开导航"
+      >
+        <span class="nav-toggle-bars" aria-hidden="true"><i></i><i></i></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <ul class="nav-list">
+          {
+            navItems.map((item) => (
+              <li>
+                <a class="nav-link" href={item.href}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="nav-mail" href={`mailto:${site.email}`}>{site.email}</a>
+      </nav>
+    </div>
   </div>
 </header>
 
@@ -54,7 +74,7 @@ const navItems = site.nav.map((item) => ({
   }
 
   .site-header.is-scrolled {
-    background: #0a0c10;
+    background: var(--bg);
     border-bottom-color: var(--hairline);
   }
 
@@ -78,6 +98,54 @@ const navItems = site.nav.map((item) => ({
     justify-content: space-between;
     gap: 20px;
     height: 72px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    color: var(--muted);
+    transition: color 0.2s var(--ease), border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+
+  .theme-toggle:hover {
+    color: var(--spark);
+    border-color: var(--spark-line);
+    background: var(--spark-soft);
+  }
+
+  .theme-icon {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .icon-sun {
+    display: none;
+  }
+
+  .theme-toggle[data-theme='light'] .icon-moon {
+    display: none;
+  }
+
+  .theme-toggle[data-theme='light'] .icon-sun {
+    display: block;
   }
 
   .brand {
@@ -202,7 +270,7 @@ const navItems = site.nav.map((item) => ({
 
   .nav-mail:hover {
     color: var(--cyan);
-    border-bottom-color: rgba(110, 231, 249, 0.32);
+    border-bottom-color: var(--cyan-line);
   }
 
   .nav-toggle {
@@ -242,6 +310,15 @@ const navItems = site.nav.map((item) => ({
       height: 64px;
     }
 
+    .header-right {
+      gap: 10px;
+    }
+
+    .theme-toggle {
+      width: 38px;
+      height: 38px;
+    }
+
     .nav-toggle {
       display: inline-flex;
     }
@@ -254,7 +331,7 @@ const navItems = site.nav.map((item) => ({
       display: grid;
       gap: 4px;
       padding: 8px 24px 18px;
-      background: #0a0c10;
+      background: var(--bg);
       border-bottom: 1px solid var(--hairline);
       opacity: 0;
       visibility: hidden;
@@ -344,4 +421,58 @@ const navItems = site.nav.map((item) => ({
       }
     });
   }
+
+  /* ---------- 主题切换 ---------- */
+
+  const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+  if (!document.documentElement.dataset.theme) {
+    document.documentElement.dataset.theme = themeMedia.matches ? 'light' : 'dark';
+  }
+
+  const syncTheme = () => {
+    const isLight = document.documentElement.dataset.theme === 'light';
+
+    if (themeToggle) {
+      themeToggle.dataset.theme = isLight ? 'light' : 'dark';
+      themeToggle.setAttribute('aria-label', isLight ? '切换到深色主题' : '切换到浅色主题');
+      themeToggle.title = isLight ? '切换到深色主题' : '切换到浅色主题';
+    }
+
+    if (themeMeta) {
+      themeMeta.setAttribute('content', isLight ? '#f4f1ea' : '#0a0c10');
+    }
+  };
+
+  const setTheme = (theme: 'light' | 'dark') => {
+    document.documentElement.dataset.theme = theme;
+    syncTheme();
+  };
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      try {
+        localStorage.setItem('jrxh-theme', next);
+      } catch {
+        // 隐私模式下写入失败时，本次切换仍然生效
+      }
+      setTheme(next);
+    });
+  }
+
+  themeMedia.addEventListener('change', (event) => {
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem('jrxh-theme');
+    } catch {
+      stored = null;
+    }
+    if (stored) return;
+    setTheme(event.matches ? 'light' : 'dark');
+  });
+
+  syncTheme();
 </script>

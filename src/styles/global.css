@@ -25,8 +25,34 @@
   --spark: #ff6a3d;
   --spark-soft: rgba(255, 106, 61, 0.12);
   --spark-line: rgba(255, 106, 61, 0.45);
+  --spark-hover: #ff7d55;
   --cyan: #6ee7f9;
+  --cyan-line: rgba(110, 231, 249, 0.32);
   --green: #34d399;
+
+  /* 语义色：正文层级、悬停、代码 */
+  --text-soft: #c3cad8;
+  --text-soft-2: #b8c0d0;
+  --text-soft-3: #a8b0c2;
+  --prose-text: #cfd6e2;
+  --hover-row: rgba(255, 255, 255, 0.022);
+  --mark-line: rgba(255, 255, 255, 0.16);
+  --spark-bar-off: rgba(255, 255, 255, 0.12);
+  --plus: #2c323f;
+  --slash: #313744;
+  --watermark: rgba(255, 255, 255, 0.1);
+  --watermark-fill: rgba(255, 255, 255, 0.07);
+  --code-bg: #0d1015;
+  --code-text: #c3cad8;
+  --code-inline-bg: #0e1116;
+  --code-inline-text: #6ee7f9;
+  --glow-spark: rgba(255, 106, 61, 0.1);
+  --glow-cyan: rgba(110, 231, 249, 0.045);
+  --selection-ink: #140805;
+  --btn-ink: #180a04;
+
+  /* 主题 */
+  color-scheme: dark;
 
   /* 字体：标题用中文宋体，标签用等宽 */
   --font-display: 'Songti SC', 'Source Han Serif SC', 'Noto Serif SC', 'STSong',
@@ -43,6 +69,53 @@
 
   /* 动效 */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* 浅色：暖纸面 + 墨色文字，终端与代码块保持深色 */
+[data-theme='light'] {
+  --bg: #f4f1ea;
+  --bg-panel: #fbf9f4;
+  --bg-panel-2: #ece9e0;
+  --grid-line: rgba(21, 26, 34, 0.055);
+  --hairline: rgba(21, 26, 34, 0.16);
+  --hairline-soft: rgba(21, 26, 34, 0.08);
+  --edge: rgba(21, 26, 34, 0.12);
+  --edge-strong: rgba(21, 26, 34, 0.3);
+
+  --text: #151a22;
+  --muted: #4e5766;
+  --dim: #586172;
+  --faint: #646d7d;
+
+  --spark: #c2410c;
+  --spark-soft: rgba(194, 65, 12, 0.09);
+  --spark-line: rgba(194, 65, 12, 0.42);
+  --spark-hover: #a8370a;
+  --cyan: #0e7490;
+  --cyan-line: rgba(14, 116, 144, 0.35);
+  --green: #047857;
+
+  --text-soft: #2f3846;
+  --text-soft-2: #3b4453;
+  --text-soft-3: #4a5361;
+  --prose-text: #2c3543;
+  --hover-row: rgba(21, 26, 34, 0.045);
+  --mark-line: rgba(21, 26, 34, 0.22);
+  --spark-bar-off: rgba(21, 26, 34, 0.16);
+  --plus: #a3a9b3;
+  --slash: #adb3bd;
+  --watermark: rgba(21, 26, 34, 0.12);
+  --watermark-fill: rgba(21, 26, 34, 0.07);
+  --code-bg: #eae7de;
+  --code-text: #2b3442;
+  --code-inline-bg: #eae7de;
+  --code-inline-text: #0b677a;
+  --glow-spark: rgba(194, 65, 12, 0.06);
+  --glow-cyan: rgba(14, 116, 144, 0.04);
+  --selection-ink: #fffaf3;
+  --btn-ink: #fffaf3;
+
+  color-scheme: light;
 }
 
 *,
@@ -93,8 +166,8 @@ body::after {
   z-index: 0;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(42rem 30rem at 82% -8%, rgba(255, 106, 61, 0.1), transparent 62%),
-    radial-gradient(36rem 26rem at 4% 2%, rgba(110, 231, 249, 0.045), transparent 62%);
+    radial-gradient(42rem 30rem at 82% -8%, var(--glow-spark), transparent 62%),
+    radial-gradient(36rem 26rem at 4% 2%, var(--glow-cyan), transparent 62%);
   background-repeat: repeat, no-repeat, no-repeat;
 }
 
@@ -139,7 +212,7 @@ button {
 
 ::selection {
   background: var(--spark);
-  color: #140805;
+  color: var(--selection-ink);
 }
 
 :focus-visible {
@@ -232,11 +305,11 @@ button {
 
 .btn-primary {
   background: var(--spark);
-  color: #180a04;
+  color: var(--btn-ink);
 }
 
 .btn-primary:hover {
-  background: #ff7d55;
+  background: var(--spark-hover);
 }
 
 .btn-ghost {
@@ -251,7 +324,7 @@ button {
 
 .btn-ghost:hover {
   border-color: var(--spark-line);
-  color: #fff;
+  color: var(--text);
   background: var(--spark-soft);
 }
 
@@ -291,7 +364,7 @@ button {
   padding: 10px 16px;
   border-radius: var(--radius);
   background: var(--spark);
-  color: #180a04;
+  color: var(--btn-ink);
   font-size: 14px;
   font-weight: 600;
   transition: transform 0.18s var(--ease);
@@ -299,7 +372,6 @@ button {
 
 .skip-link:focus-visible {
   transform: translateY(0);
-  outline-color: #fff;
 }
 
 /* ---------- 滚动淡入：短距离位移，像纸面显影 ---------- */
@@ -366,17 +438,17 @@ button {
   }
 
   ::-webkit-scrollbar-track {
-    background: #0a0c10;
+    background: var(--bg);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #232833;
+    background: var(--edge-strong);
     border-radius: 99px;
-    border: 2px solid #0a0c10;
+    border: 2px solid var(--bg);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #333a47;
+    background: var(--muted);
   }
 }
 

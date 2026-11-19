@@ -188,7 +188,7 @@ const readTime = readMinutes(post.body);
     padding-block: clamp(30px, 4vw, 44px) clamp(40px, 6vw, 64px);
     font-size: 16.5px;
     line-height: 2;
-    color: #cfd6e2;
+    color: var(--prose-text);
   }
 
   .prose :global(p) {
@@ -275,10 +275,10 @@ const readTime = readMinutes(post.body);
   .prose :global(code) {
     padding: 2px 5px;
     border: 1px solid var(--hairline-soft);
-    background: var(--bg-panel);
+    background: var(--code-inline-bg);
     font-family: var(--font-mono);
     font-size: 0.86em;
-    color: var(--cyan);
+    color: var(--code-inline-text);
   }
 
   .prose :global(:not(pre) > code) {
@@ -289,7 +289,7 @@ const readTime = readMinutes(post.body);
     margin: 1.6em 0;
     padding: 16px 18px;
     border: 1px solid var(--hairline);
-    background: #0d1015;
+    background: var(--code-bg);
     overflow-x: auto;
     font-size: 13px;
     line-height: 1.8;
@@ -300,7 +300,7 @@ const readTime = readMinutes(post.body);
     border: 0;
     background: none;
     font-size: inherit;
-    color: #c3cad8;
+    color: var(--code-text);
   }
 
   .prose :global(hr) {

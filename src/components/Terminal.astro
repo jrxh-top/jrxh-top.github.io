@@ -82,6 +82,20 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
 
 <style>
   .terminal {
+    /* 终端始终保持深色，作为页面的固定"控制台"材质 */
+    --bg-panel: #0e1116;
+    --text: #f5f7fa;
+    --muted: #8b93a7;
+    --dim: #737d92;
+    --faint: #5b6478;
+    --spark: #ff6a3d;
+    --spark-soft: rgba(255, 106, 61, 0.12);
+    --spark-line: rgba(255, 106, 61, 0.45);
+    --cyan: #6ee7f9;
+    --green: #34d399;
+    --hairline: rgba(255, 255, 255, 0.1);
+    --hairline-soft: rgba(255, 255, 255, 0.055);
+    color-scheme: dark;
     position: relative;
     display: flex;
     flex-direction: column;

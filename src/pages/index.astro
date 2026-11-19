@@ -5,6 +5,7 @@ import Terminal from '../components/Terminal.astro';
 import Bento from '../components/Bento.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Footer from '../components/Footer.astro';
+import ThemeInit from '../components/ThemeInit.astro';
 import { site, projects } from '../data/site';
 ---
 
@@ -18,7 +19,7 @@ import { site, projects } from '../data/site';
     <link rel="canonical" href={site.url} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0a0c10" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="jrxh.top" />
@@ -38,9 +39,7 @@ import { site, projects } from '../data/site';
     <meta name="twitter:image" content={`${site.url}/og.png`} />
     <meta name="twitter:image:alt" content="Jrxh Spark Console — jrxh.top" />
 
-    <script is:inline>
-      document.documentElement.classList.add('js');
-    </script>
+    <ThemeInit />
   </head>
 
   <body>
@@ -325,11 +324,11 @@ import { site, projects } from '../data/site';
         margin: 0;
         font-size: 12.5px;
         line-height: 1.7;
-        color: #b8c0d0;
+        color: var(--text-soft-2);
       }
 
       .fact a {
-        color: #c3cad8;
+        color: var(--text-soft);
         border-bottom: 1px solid transparent;
         transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
       }
@@ -436,7 +435,7 @@ import { site, projects } from '../data/site';
 
       .projects-foot a {
         color: var(--muted);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        border-bottom: 1px solid var(--mark-line);
         transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
       }
 

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ThemeInit from '../components/ThemeInit.astro';
 import { site } from '../data/site';
 
 const spark = site.sparks[Math.floor(Math.random() * site.sparks.length)];
@@ -17,7 +18,7 @@ const spark = site.sparks[Math.floor(Math.random() * site.sparks.length)];
     <link rel="canonical" href={`${site.url}/spark`} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0a0c10" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="spark.sh — 随机一点火花" />
@@ -29,9 +30,7 @@ const spark = site.sparks[Math.floor(Math.random() * site.sparks.length)];
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content="Jrxh Spark Console — jrxh.top" />
 
-    <script is:inline>
-      document.documentElement.classList.add('js');
-    </script>
+    <ThemeInit />
   </head>
 
   <body>
