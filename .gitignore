@@ -30,5 +30,8 @@ coverage/
 *.tsbuildinfo
 .eslintcache
 
+# oh-my-claudecode 本地项目记忆 / 会话状态
+.omc/
+
 # 部署平台本地状态
 .vercel/
