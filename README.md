@@ -24,11 +24,15 @@ Node 版本建议 18+（本项目在 Node 22 下验证通过）。
 ├── package.json
 ├── astro.config.mjs
 ├── tsconfig.json
+├── .env.local          # 本地邮件工具变量（不提交）
 ├── public/
 │   ├── favicon.svg
 │   ├── og.svg          # OG 图源文件
 │   └── og.png          # 实际分享使用的 1200×630 PNG
 ├── src/
+│   ├── dev/
+│   │   ├── mail.astro          # 本地邮件页（仅 dev）
+│   │   └── api/send-mail.ts    # Brevo 发送接口（仅 dev）
 │   ├── components/
 │   │   ├── Header.astro
 │   │   ├── ThemeInit.astro     # 首屏恢复浅色 / 深色主题
@@ -104,6 +108,31 @@ draft: false
 - 正文支持标准 Markdown：`##` 小标题、引用、列表、行内代码与代码块都有对应排版；
 - 删空所有文章后，首页写作卡会自动显示「暂无公开写作，先去折腾项目。」；
 - 现有文章均为示例内容，直接替换或删除即可。
+
+## 本地邮件发送页（仅开发环境）
+
+`npm run dev` 后直接访问：
+
+```text
+http://localhost:4321/dev/mail
+```
+
+页面、模板预览和 `/api/dev/send-mail` 只会由 `astro.config.mjs` 在 `command === 'dev'` 时注入，`npm run build` 不会生成它们。页面没有入口链接，仅供本地使用。
+
+所有邮件统一套用 `src/dev/email-template.ts` 的品牌模板：顶部品牌、正文卡片、深色签名区。可以先打开 `http://localhost:4321/dev/mail/preview` 预览；纯文本正文会自动转成段落，HTML 正文会原样嵌入模板。
+
+变量放在 `.env.local`（已被 `.gitignore` 忽略）：
+
+```bash
+BREVO_API_KEY=xkeysib-...
+BREVO_SENDER_EMAIL=hello@jrxh.top
+BREVO_SENDER_NAME=Jrxh
+```
+
+- 发件邮箱必须已在 Brevo 的 `Senders & IPs` 中验证；
+- 接口只接受来自 `localhost` / `127.0.0.1` 的请求；
+- 不要用 `--host` 把开发服务器暴露到局域网或公网；
+- 如果 key 曾出现在聊天记录或提交历史中，请到 Brevo 后台撤销并重新生成。
 
 ## 部署
 

@@ -1,0 +1,699 @@
+---
+import '../styles/global.css';
+import ThemeInit from '../components/ThemeInit.astro';
+
+const env = import.meta.env as unknown as Record<string, string | undefined>;
+const hasKey = Boolean(env.BREVO_API_KEY);
+const senderEmail = env.BREVO_SENDER_EMAIL ?? 'hello@jrxh.top';
+const senderName = env.BREVO_SENDER_NAME ?? 'Jrxh';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>本地邮件发送 — jrxh.top</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0a0c10" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <ThemeInit />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">跳到邮件表单</a>
+
+    <div class="shell mail-shell">
+      <header class="local-bar">
+        <div class="container local-bar-inner">
+          <a class="local-brand" href="/">jrxh<span>.top</span></a>
+          <span class="local-tag"><i aria-hidden="true"></i> local only</span>
+          <a class="local-back" href="/">← 返回首页</a>
+        </div>
+      </header>
+
+      <main class="container mail-main" id="main">
+        <div class="mail-head">
+          <p class="eyebrow">dev://mail — 仅开发环境</p>
+          <h1>发一封邮件</h1>
+          <p class="lead">
+            通过 Brevo 事务邮件 API 发送，所有邮件统一套用 jrxh 品牌模板。页面和接口只在 <code>npm run dev</code> 时注入，<strong>不会进入线上构建产物</strong>。
+          </p>
+        </div>
+
+        {
+          !hasKey && (
+            <p class="setup-warning">
+              未检测到 <code>BREVO_API_KEY</code>。请在 <code>jrxh-top/.env.local</code>
+              中添加后重启 dev server。
+            </p>
+          )
+        }
+
+        <div class="mail-grid">
+          <form class="mail-card" id="mail-form">
+            <div class="form-head">
+              <span class="form-label">compose / send</span>
+              <div class="form-tools">
+                <a class="fill-btn" href="/dev/mail/preview" target="_blank" rel="noreferrer">
+                  预览模板 ↗
+                </a>
+                <button class="fill-btn" type="button" id="fill-test">填入测试内容</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="to">
+                收件人
+                <span>必填，多个用逗号或分号分隔</span>
+              </label>
+              <input
+                id="to"
+                name="to"
+                type="text"
+                inputmode="email"
+                autocomplete="off"
+                placeholder="you@example.com, another@example.com"
+                required
+              />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="cc">抄送 <span>选填</span></label>
+                <input id="cc" name="cc" type="text" inputmode="email" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="bcc">密送 <span>选填</span></label>
+                <input id="bcc" name="bcc" type="text" inputmode="email" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="subject">主题 <span>必填</span></label>
+                <input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  maxlength="200"
+                  autocomplete="off"
+                  placeholder="jrxh.top · 测试邮件"
+                  required
+                />
+              </div>
+              <div class="field">
+                <label for="format">正文格式</label>
+                <select id="format" name="format">
+                  <option value="text">纯文本</option>
+                  <option value="html">HTML</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="body">
+                正文
+                <span>纯文本会转成段落，HTML 会嵌入固定模板</span>
+              </label>
+              <textarea
+                id="body"
+                name="body"
+                rows="12"
+                placeholder="写点什么，或点右上角「填入测试内容」。"
+                required
+              ></textarea>
+            </div>
+
+            <div class="mail-actions">
+              <button class="btn btn-primary" type="submit" id="send-btn">
+                <span id="send-label">发送邮件</span>
+                <span aria-hidden="true">→</span>
+              </button>
+              <span class="action-hint">会实际调用 Brevo，并消耗账号额度</span>
+            </div>
+
+            <div class="mail-status" id="mail-status" role="status" aria-live="polite"></div>
+          </form>
+
+          <aside class="mail-aside" aria-label="发送配置">
+            <div class="aside-block">
+              <span class="aside-label">sender</span>
+              <p class="aside-value">{senderName} &lt;{senderEmail}&gt;</p>
+            </div>
+
+            <div class="aside-block">
+              <span class="aside-label">template</span>
+              <p class="aside-value">jrxh · mail v1</p>
+            </div>
+
+            <div class="aside-block">
+              <span class="aside-label">api key</span>
+              <p class:list={['aside-value', 'key-state', hasKey ? 'is-ok' : 'is-missing']}>
+                <i aria-hidden="true"></i>
+                {hasKey ? '已配置' : '未配置'}
+              </p>
+            </div>
+
+            <div class="aside-block">
+              <span class="aside-label">request</span>
+              <p class="aside-value">POST /v3/smtp/email</p>
+            </div>
+
+            <p class="aside-note">
+              接口只接受来自 localhost / 127.0.0.1 的请求。不要把开发服务器暴露到公网。
+            </p>
+          </aside>
+        </div>
+      </main>
+
+      <footer class="container local-foot">
+        <span>local tool · not in production build</span>
+        <span>jrxh@top:~$ mail --local</span>
+      </footer>
+    </div>
+
+    <script>
+      const form = document.querySelector<HTMLFormElement>('#mail-form');
+      const status = document.querySelector<HTMLDivElement>('#mail-status');
+      const submit = document.querySelector<HTMLButtonElement>('#send-btn');
+      const submitLabel = document.querySelector<HTMLSpanElement>('#send-label');
+      const fillTest = document.querySelector<HTMLButtonElement>('#fill-test');
+
+      const setStatus = (kind: 'ok' | 'error' | 'pending' | '', message: string) => {
+        if (!status) return;
+        status.className = kind ? `mail-status is-${kind}` : 'mail-status';
+        status.textContent = message;
+      };
+
+      fillTest?.addEventListener('click', () => {
+        if (!form) return;
+
+        const subject = form.elements.namedItem('subject');
+        const body = form.elements.namedItem('body');
+
+        if (subject instanceof HTMLInputElement) {
+          subject.value = 'jrxh.top · Brevo 本地测试';
+        }
+        if (body instanceof HTMLTextAreaElement) {
+          body.value = `这是一封来自本地邮件页的测试。\n\n发送时间：${new Date().toLocaleString(
+            'zh-CN'
+          )}`;
+        }
+
+        setStatus('', '');
+      });
+
+      if (form) {
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          if (!form.reportValidity()) return;
+
+          const data = new FormData(form);
+          const payload = {
+            to: data.get('to'),
+            cc: data.get('cc'),
+            bcc: data.get('bcc'),
+            subject: data.get('subject'),
+            body: data.get('body'),
+            format: data.get('format')
+          };
+
+          if (submit) submit.disabled = true;
+          if (submitLabel) submitLabel.textContent = '发送中…';
+          setStatus('pending', '正在调用 Brevo…');
+
+          try {
+            const response = await fetch('/api/dev/send-mail', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            const result = (await response.json().catch(() => null)) as
+              | { messageId?: string; messageIds?: string[]; message?: string; code?: string }
+              | null;
+
+            if (!response.ok) {
+              const detail = result?.message ?? '未知错误';
+              const code = result?.code ? ` [${result.code}]` : '';
+              setStatus('error', `发送失败（HTTP ${response.status}）：${detail}${code}`);
+              return;
+            }
+
+            const id = result?.messageId ?? result?.messageIds?.[0] ?? '已提交';
+            setStatus('ok', `已发送 · messageId: ${id}`);
+          } catch (error) {
+            setStatus(
+              'error',
+              `请求失败：${error instanceof Error ? error.message : String(error)}`
+            );
+          } finally {
+            if (submit) submit.disabled = false;
+            if (submitLabel) submitLabel.textContent = '发送邮件';
+          }
+        });
+      }
+    </script>
+
+    <style>
+      .mail-shell {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .local-bar {
+        border-bottom: 1px solid var(--hairline-soft);
+      }
+
+      .local-bar-inner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 64px;
+      }
+
+      .local-brand {
+        font-family: var(--font-display);
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1;
+      }
+
+      .local-brand span {
+        margin-left: 2px;
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--spark);
+        vertical-align: super;
+      }
+
+      .local-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      .local-tag i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+
+      .local-back {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        transition: color 0.2s var(--ease);
+      }
+
+      .local-back:hover {
+        color: var(--spark);
+      }
+
+      .mail-main {
+        flex: 1;
+        width: 100%;
+        padding-block: clamp(40px, 6vw, 72px);
+      }
+
+      .mail-head {
+        max-width: 720px;
+        margin-bottom: clamp(28px, 4vw, 44px);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--spark);
+      }
+
+      .eyebrow::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--spark);
+      }
+
+      .mail-head h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2.1rem, 4.8vw, 3.4rem);
+        line-height: 1.1;
+        letter-spacing: 0.02em;
+      }
+
+      .lead {
+        max-width: 42em;
+        margin-top: 16px;
+        font-size: 14.5px;
+        line-height: 1.9;
+        color: var(--muted);
+      }
+
+      .lead code,
+      .setup-warning code {
+        padding: 1px 5px;
+        border-radius: 2px;
+        background: var(--code-inline-bg);
+        color: var(--code-inline-text);
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        white-space: nowrap;
+      }
+
+      .mail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(240px, 0.55fr);
+        gap: clamp(24px, 3.4vw, 40px);
+        align-items: start;
+      }
+
+      .mail-card {
+        padding: clamp(20px, 3vw, 30px);
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius-lg);
+        background: var(--bg-panel);
+      }
+
+      .form-head {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 14px;
+        margin-bottom: 22px;
+        border-bottom: 1px solid var(--hairline-soft);
+      }
+
+      .form-label {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      .form-tools {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px 14px;
+      }
+
+      .fill-btn {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.04em;
+        color: var(--cyan);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s var(--ease);
+      }
+
+      .fill-btn:hover {
+        border-bottom-color: var(--cyan-line);
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+
+      .field label {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-soft-2);
+      }
+
+      .field label span {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        letter-spacing: 0;
+        text-transform: none;
+        color: var(--faint);
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius);
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 1.7;
+        transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
+      }
+
+      .field input::placeholder,
+      .field textarea::placeholder {
+        color: var(--faint);
+      }
+
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        border-color: var(--spark);
+      }
+
+      .field textarea {
+        min-height: 220px;
+        resize: vertical;
+      }
+
+      .field-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .mail-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 6px;
+      }
+
+      .action-hint {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        color: var(--faint);
+      }
+
+      .btn[disabled] {
+        opacity: 0.6;
+        cursor: wait;
+        transform: none;
+      }
+
+      .mail-status {
+        margin-top: 18px;
+        padding: 12px 14px;
+        border: 1px solid var(--hairline);
+        border-left: 2px solid currentColor;
+        border-radius: var(--radius);
+        background: var(--bg-panel-2);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        line-height: 1.8;
+        word-break: break-word;
+      }
+
+      .mail-status:empty {
+        display: none;
+      }
+
+      .mail-status.is-ok {
+        color: var(--green);
+      }
+
+      .mail-status.is-error {
+        color: var(--spark);
+      }
+
+      .mail-status.is-pending {
+        color: var(--cyan);
+      }
+
+      .setup-warning {
+        margin-bottom: 20px;
+        padding: 12px 14px;
+        border-left: 2px solid var(--spark);
+        background: var(--spark-soft);
+        font-size: 13px;
+        line-height: 1.8;
+        color: var(--text-soft);
+      }
+
+      .mail-aside {
+        display: flex;
+        flex-direction: column;
+        border-top: 1px solid var(--hairline);
+      }
+
+      .aside-block {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--hairline-soft);
+      }
+
+      .aside-label {
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      .aside-value {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        line-height: 1.7;
+        color: var(--text-soft-2);
+        word-break: break-word;
+      }
+
+      .key-state {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .key-state i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .key-state.is-ok {
+        color: var(--green);
+      }
+
+      .key-state.is-missing {
+        color: var(--spark);
+      }
+
+      .aside-note {
+        padding-top: 16px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        line-height: 1.9;
+        color: var(--faint);
+      }
+
+      .local-foot {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 20px 28px;
+        border-top: 1px solid var(--hairline-soft);
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      @media (max-width: 900px) {
+        .mail-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .mail-aside {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 0 20px;
+          margin-top: 4px;
+          border-top: 0;
+        }
+
+        .aside-block {
+          border-top: 1px solid var(--hairline);
+          border-bottom: 0;
+        }
+
+        .aside-note {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .local-bar-inner {
+          height: 58px;
+          gap: 10px;
+        }
+
+        .local-tag {
+          display: none;
+        }
+
+        .field-row {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 0;
+        }
+
+        .mail-aside {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .aside-block {
+          border-top: 0;
+          border-bottom: 1px solid var(--hairline-soft);
+        }
+
+        .local-foot {
+          flex-direction: column;
+          gap: 6px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .btn,
+        .fill-btn,
+        .local-back,
+        .field input,
+        .field select,
+        .field textarea {
+          transition: none;
+        }
+      }
+    </style>
+  </body>
+</html>

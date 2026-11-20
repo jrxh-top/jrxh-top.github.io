@@ -34,8 +34,8 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
       }
     </div>
 
-    <div class="term-quick">
-      <span class="quick-label" aria-hidden="true">快速命令</span>
+    <details class="term-quick" id="term-quick" open>
+      <summary class="quick-label">快速命令</summary>
       <div class="quick-list">
         {
           quickCommands.map((cmd) => (
@@ -45,7 +45,7 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
           ))
         }
       </div>
-    </div>
+    </details>
 
     <button
       class="term-toggle"
@@ -86,8 +86,8 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
     --bg-panel: #0e1116;
     --text: #f5f7fa;
     --muted: #8b93a7;
-    --dim: #737d92;
-    --faint: #5b6478;
+    --dim: #8791a5;
+    --faint: #7f899d;
     --spark: #ff6a3d;
     --spark-soft: rgba(255, 106, 61, 0.12);
     --spark-line: rgba(255, 106, 61, 0.45);
@@ -159,7 +159,7 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
   .term-badge {
     font-size: 10px;
     letter-spacing: 0.1em;
-    color: #454c5c;
+    color: var(--faint);
     text-transform: uppercase;
   }
 
@@ -211,7 +211,7 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
   }
 
   .term-output :global(.seg-dim) {
-    color: #4f5668;
+    color: var(--dim);
   }
 
   .term-output :global(.seg-muted) {
@@ -258,12 +258,20 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
   }
 
   .quick-label {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 8px;
-    font-size: 9.5px;
+    font-size: 10.5px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--faint);
+    list-style: none;
+    cursor: default;
+  }
+
+  .quick-label::-webkit-details-marker {
+    display: none;
   }
 
   .quick-list {
@@ -375,13 +383,39 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
 
   @media (max-width: 640px) {
     .term-screen {
-      padding: 14px 14px 14px;
+      padding: 12px 14px;
     }
 
     .term-output {
-      height: auto;
-      max-height: 240px;
+      height: clamp(136px, 40vw, 156px);
+      max-height: 156px;
       min-height: 0;
+    }
+
+    .term-quick {
+      margin-top: 10px;
+      padding-top: 4px;
+    }
+
+    .quick-label {
+      min-height: 36px;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    .quick-label::after {
+      content: '+';
+      font-size: 14px;
+      letter-spacing: 0;
+      color: var(--dim);
+    }
+
+    .term-quick[open] .quick-label {
+      margin-bottom: 8px;
+    }
+
+    .term-quick[open] .quick-label::after {
+      content: '−';
     }
 
     .term-output :global(.line) {
@@ -430,6 +464,7 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
 
   const terminal = document.getElementById('terminal');
   const output = document.getElementById('term-output');
+  const quick = document.getElementById('term-quick') as HTMLDetailsElement | null;
   const form = document.getElementById('term-form') as HTMLFormElement | null;
   const input = document.getElementById('term-input') as HTMLInputElement | null;
   const toggle = document.getElementById('term-toggle') as HTMLButtonElement | null;
@@ -438,7 +473,16 @@ const ps1 = `${site.promptUser}@${site.promptHost}:~$`;
     // 理论上不会发生；直接保持静态输出即可
   } else {
     const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const compactQuery = window.matchMedia('(max-width: 640px)');
     const isReduced = () => reducedQuery.matches;
+
+    if (quick) {
+      const syncQuickMode = () => {
+        quick.open = !compactQuery.matches;
+      };
+      syncQuickMode();
+      compactQuery.addEventListener('change', syncQuickMode);
+    }
     const sleep = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
     let taskQueue: Promise<void> = Promise.resolve();
